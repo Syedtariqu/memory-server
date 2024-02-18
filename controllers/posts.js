@@ -9,7 +9,7 @@ export const getPosts = async (req, res) => {
     const { page } = req.query;
     
     try {
-        const LIMIT = 4;
+        const LIMIT = 8;
         const startIndex = (Number(page) - 1) * LIMIT; // get the starting index of every page
     
         const total = await PostMessage.countDocuments({});
@@ -28,6 +28,18 @@ export const getPostsBySearch = async (req, res) => {
         const title = new RegExp(searchQuery, "i");
 
         const posts = await PostMessage.find({ $or: [ { title }, { tags: { $in: tags.split(',') } } ]});
+
+        res.json({ data: posts });
+    } catch (error) {    
+        res.status(404).json({ message: error.message });
+    }
+}
+
+export const getPostsByCreator = async (req, res) => {
+    const { name } = req.query;
+
+    try {
+        const posts = await PostMessage.find({ name });
 
         res.json({ data: posts });
     } catch (error) {    
